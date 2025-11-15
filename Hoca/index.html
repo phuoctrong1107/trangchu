@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+   <meta charset="UTF-8">
+   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+   <link rel="stylesheet" href="mystyle.css">
+</head>
+<body>   
+   <div class="controls">
+      <h3>Chọn Nhạc</h3>
+      <label><input type="radio" name="music" id="song1" checked=""> Sóng Gió</label>
+      <label><input type="radio" name="music" id="song2"> Gió</label>
+      <label><input type="radio" name="music" id="song3"> Tháng năm</label>
+      <div class="music-controls">
+         <button id="playBtn">▶️ Phát nhạc</button>
+         <button id="pauseBtn" style="display: none;">⏸️ Tạm dừng</button>
+      </div>
+      
+      <h3>Chọn Cảnh</h3>
+      <label><input type="radio" name="bg" id="bg1" checked=""> Cảnh 1</label>
+      <label><input type="radio" name="bg" id="bg2"> Cảnh 2</label>
+      <label><input type="radio" name="bg" id="bg3"> Cảnh 3</label>
+    </div>
+    <div class="aquarium">
+      <img src="images/daybien.jpg" class="background bg1" alt="Cảnh 1" style="display: block;">
+      <img src="images/canh2.jfif" class="background bg2" alt="Cảnh 2" style="display: none;">
+      <img src="images/canh4.jpg" class="background bg3" alt="Cảnh 3" style="display: none;">
+
+      <img src="images/shark.png" class="fish fish1" alt="Cá mập" >
+      <img src="images/faintSchool.png" class="fish fish2" alt="Bầy cá">
+      <img src="images/goldFishSchool.png" class="fish fish3" alt ="Cá vàng">
+      <img src="images/turtle.png" class="fish fish4" alt="Rùa">
+                
+      <img src="images/diver1.png" class="diver1 fish" alt="Thợ lặn">
+      <img src="images/diver2.png" class="diver2 fish" alt="Thợ lặn">
+      <img src="images/diver3.png" class="diver3 fish" alt="Thợ lặn">
+
+    </div>
+    <audio id="a1" loop="">
+      <source src="audio/Songgio.mp3" type="audio/mpeg">
+    </audio>
+    <audio id="a2" loop="">
+      <source src="audio/Gio.mp3" type="audio/mpeg">
+    </audio>
+    <audio id="a3" loop="">
+      <source src="audio/thangnam.mp3" type="audio/mpeg">
+    </audio>
+    <script>
+      let isMusicPlaying = false;
+      let currentAudio = document.getElementById("a1");
+      
+      const backgrounds = document.querySelectorAll(".background");
+      const bgRadios = document.querySelectorAll('input[name="bg"]');
+      bgRadios.forEach((radio, index) => {
+        radio.addEventListener("change", () => {
+          backgrounds.forEach((bg, i) => {
+            bg.style.display = i === index ? "block" : "none";
+          });
+        });
+      });
+      backgrounds.forEach((bg, i) => {
+        bg.style.display = i === 0 ? "block" : "none";
+      });
+      
+      const audios = [
+        document.getElementById("a1"),
+        document.getElementById("a2"),
+        document.getElementById("a3"),
+      ];
+      
+      audios.forEach(audio => {
+         audio.pause();
+         audio.currentTime = 0;
+      });
+      
+      const musicRadios = document.querySelectorAll('input[name="music"]');
+      musicRadios.forEach((radio, index) => {
+        radio.addEventListener("change", () => {
+          audios.forEach((audio, i) => {
+            if (i === index) {
+               currentAudio = audio;
+               if (isMusicPlaying) {
+                  audio.play();
+               }
+            } else {
+              audio.pause();
+              audio.currentTime = 0;
+            }
+          });
+        });
+      });
+      
+      const pauseBtn = document.getElementById('pauseBtn');
+      const playBtn = document.getElementById('playBtn');
+      
+      pauseBtn.addEventListener('click', function() {
+         audios.forEach(audio => {
+            audio.pause();
+         });
+         isMusicPlaying = false;
+         pauseBtn.style.display = 'none';
+         playBtn.style.display = 'block';
+      });
+      
+      playBtn.addEventListener('click', function() {
+         if (currentAudio) {
+            currentAudio.play();
+         }
+         isMusicPlaying = true;
+         playBtn.style.display = 'none';
+         pauseBtn.style.display = 'block';
+      });
+      
+      playBtn.style.display = 'block';
+      pauseBtn.style.display = 'none';
+      
+      const fishes = document.querySelectorAll(".fish, .diver1, .diver2, .diver3");
+      const aquarium = document.querySelector(".aquarium");
+      const fishData = [];
+      fishes.forEach((fish) => {
+        fishData.push({
+          el: fish,
+          x: Math.random() * (aquarium.clientWidth - 80),
+          y: Math.random() * (aquarium.clientHeight - 80),
+          vx: (Math.random() - 0.5) * 2,
+          vy: (Math.random() - 0.5) * 2,
+        });
+      });
+      
+      function animateFish() {
+        fishData.forEach((fish) => {
+          fish.x += fish.vx;
+          fish.y += fish.vy;
+
+          if (fish.x < 0 || fish.x > aquarium.clientWidth - 80) fish.vx *= -1;
+          if (fish.y < 0 || fish.y > aquarium.clientHeight - 80) fish.vy *= -1;
+
+          fish.el.style.left = fish.x + "px";
+          fish.el.style.top = fish.y + "px";
+
+          fish.el.style.transform = fish.vx > 0 ? "scaleX(1)" : "scaleX(-1)";
+        });
+        requestAnimationFrame(animateFish);
+      }
+      animateFish();
+   </script>
+   
+</body>
+</html>
